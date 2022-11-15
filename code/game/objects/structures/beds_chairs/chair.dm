@@ -243,7 +243,46 @@
 	buildstackamount = 5
 	item_chair = null
 	icon_state = "officechair_dark"
+	var/mutable_appearance/backrest
 
+/obj/structure/chair/office/Initialize(mapload)
+	gen_backrest()
+	return ..()
+
+/obj/structure/chair/office/on_changed_z_level(turf/old_turf, turf/new_turf, same_z_layer, notify_contents)
+	if(same_z_layer)
+		return ..()
+	cut_overlay(backrest)
+	QDEL_NULL(backrest)
+	gen_backrest()
+	return ..()
+
+/obj/structure/chair/office/proc/gen_backrest()
+	backrest = GetBackrest()
+	backrest.layer = ABOVE_MOB_LAYER
+	SET_PLANE_EXPLICIT(backrest, GAME_PLANE_UPPER, src)
+	update_backrest()
+
+/obj/structure/chair/office/proc/GetBackrest()
+	return mutable_appearance(icon, "[icon_state]_backrest")
+
+/obj/structure/chair/office/Destroy()
+	QDEL_NULL(backrest)
+	return ..()
+
+/obj/structure/chair/office/post_buckle_mob(mob/living/M)
+	. = ..()
+	update_backrest()
+
+/obj/structure/chair/office/proc/update_backrest()
+	if(has_buckled_mobs())
+		add_overlay(backrest)
+	else
+		cut_overlay(backrest)
+
+/obj/structure/chair/office/post_unbuckle_mob()
+	. = ..()
+	update_backrest()
 
 /obj/structure/chair/office/Moved(atom/old_loc, movement_dir, forced, list/old_locs, momentum_change = TRUE)
 	. = ..()
@@ -458,6 +497,46 @@ MAPPING_DIRECTIONAL_HELPERS(/obj/structure/chair/stool/bar, 0)
 	buildstackamount = 1
 	item_chair = null
 	var/turns = 0
+	var/mutable_appearance/armrest
+
+/obj/structure/chair/bronze/Initialize(mapload)
+	gen_armrest()
+	return ..()
+
+/obj/structure/chair/bronze/on_changed_z_level(turf/old_turf, turf/new_turf, same_z_layer, notify_contents)
+	if(same_z_layer)
+		return ..()
+	cut_overlay(armrest)
+	QDEL_NULL(armrest)
+	gen_armrest()
+	return ..()
+
+/obj/structure/chair/bronze/proc/gen_armrest()
+	armrest = GetArmrest()
+	armrest.layer = ABOVE_MOB_LAYER
+	SET_PLANE_EXPLICIT(armrest, GAME_PLANE_UPPER, src)
+	update_armrest()
+
+/obj/structure/chair/bronze/proc/GetArmrest()
+	return mutable_appearance(icon, "[icon_state]_armrest")
+
+/obj/structure/chair/bronze/Destroy()
+	QDEL_NULL(armrest)
+	return ..()
+
+/obj/structure/chair/bronze/post_buckle_mob(mob/living/M)
+	. = ..()
+	update_armrest()
+
+/obj/structure/chair/bronze/proc/update_armrest()
+	if(has_buckled_mobs())
+		add_overlay(armrest)
+	else
+		cut_overlay(armrest)
+
+/obj/structure/chair/bronze/post_unbuckle_mob()
+	. = ..()
+	update_armrest()
 
 /obj/structure/chair/bronze/Destroy()
 	STOP_PROCESSING(SSfastprocess, src)
