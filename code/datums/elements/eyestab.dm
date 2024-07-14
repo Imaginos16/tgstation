@@ -40,7 +40,7 @@
 
 	if (HAS_TRAIT(user, TRAIT_CLUMSY) && prob(CLUMSY_ATTACK_SELF_CHANCE))
 		target = user
-	
+
 	if (target.is_eyes_covered() || isalien(target) || isbrain(target))
 		return
 
@@ -68,7 +68,7 @@
 		)
 
 	if (target_limb)
-		target.apply_damage(damage, BRUTE, target_limb)
+		target.apply_damage(damage, BRUTE, target_limb, attacking_item = item)
 	else
 		target.take_bodypart_damage(damage)
 
@@ -94,8 +94,9 @@
 		eyes.set_organ_damage(eyes.low_threshold)
 
 	// At over 10 damage, there is a 50% chance they drop all their items
-	if (prob(50))
-		if (target.stat != DEAD && target.drop_all_held_items())
+	if (prob(50) && target.stat != DEAD)
+		var/list/dropped = target.drop_all_held_items()
+		if(length(dropped))
 			to_chat(target, span_danger("You drop what you're holding and clutch at your eyes!"))
 		target.adjust_eye_blur_up_to(20 SECONDS, EYESTAB_MAX_BLUR)
 		target.Unconscious(2 SECONDS)
